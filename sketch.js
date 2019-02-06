@@ -17,66 +17,70 @@ let alignment = true;
 let separation = true;
 
 
-function Boid(position, velocity, speed) {
-	velocity.normalize();
-	velocity.mult(speed);
-	this.position = position;
-	this.speed = speed;
-	this.velocity = velocity;
-	this.acceleration = createVector(0, 0);
+class Boid {
+	constructor(position, velocity, speed) {
+		velocity.normalize();
+		velocity.mult(speed);
+		this.position = position;
+		this.speed = speed;
+		this.velocity = velocity;
+		this.acceleration = createVector(0, 0);
+	}
 
-	this.draw = function() {
-		this.theta = this.velocity.heading() + PI/2;
+	draw() {
+		this.theta = this.velocity.heading() + PI / 2;
 		fill(0, 255, 50);
 		noStroke();
 		translate(this.position.x, this.position.y);
 		rotate(this.theta);
+
 		beginShape();
 		vertex(0, -boidSize * 2);
 		vertex(-boidSize, boidSize * 2);
 		vertex(boidSize, boidSize * 2);
 		endShape(CLOSE);
+
 		rotate(-this.theta);
 		translate(-this.position.x, -this.position.y);
 	};
 
-	this.update = function() {
+	update() {
 		this.velocity.add(this.acceleration);
 		this.velocity.limit(this.speed);
 		this.position.add(this.velocity);
 		resetMatrix();
 
 		if (this.position.x < 0) {
-			this.position.x = width;
+			this.position.x += width;
 		}
 		else if (this.position.x > width) {
-			this.position.x = 0;
+			this.position.x -= width;
 		}
 		if (this.position.y < 0) {
-			this.position.y = height;
+			this.position.y += height;
 		}
 		else if (this.position.y > height) {
-			this.position.y = 0;
+			this.position.y -= height;
 		}
 
 		this.acceleration.mult(0);
 	};
 
-	this.seek = function(target) {
+	seek(target) {
 		target.sub(this.position);
 		target.normalize();
 		target.mult(this.speed);
 		this.acceleration.add(target);
 	};
 
-	this.flee = function() {
+	flee() {
 		let count = 0;
 		let target = createVector(0, 0);
 		for (let p in predators) {
 			let distance = dist(this.position.x, this.position.y, predators[p].position.x, predators[p].position.y);
 			if (distance < boidSight) {
 				target.add(predators[p].position);
-				target.add(predators[p].velocity);
+				// target.add(predators[p].velocity);
 				count++;
 			}
 		}
@@ -89,7 +93,7 @@ function Boid(position, velocity, speed) {
 		}
 	};
 
-	this.align = function() {
+	align() {
 		let count = 0;
 		let target = createVector(0, 0);
 		for (let b in boids) {
@@ -107,7 +111,7 @@ function Boid(position, velocity, speed) {
 		}
 	};
 
-	this.cohesion = function() {
+	cohesion() {
 		let count = 0;
 		let target = createVector(0, 0);
 		for (let b in boids) {
@@ -123,7 +127,7 @@ function Boid(position, velocity, speed) {
 		}
 	};
 
-	this.space = function() {
+	space() {
 		let count = 0;
 		let target = createVector(0, 0);
 		for (let b in boids) {
@@ -147,52 +151,56 @@ function Boid(position, velocity, speed) {
 }
 
 
-function Predator(position, velocity, speed) {
-	velocity.normalize();
-	velocity.mult(speed);
-	this.position = position;
-	this.speed = speed;
-	this.velocity = velocity;
-	this.acceleration = createVector(0, 0);
+class Predator {
+	constructor(position, velocity, speed) {
+		velocity.normalize();
+		velocity.mult(speed);
+		this.position = position;
+		this.speed = speed;
+		this.velocity = velocity;
+		this.acceleration = createVector(0, 0);
+	}
 
-	this.draw = function() {
-		this.theta = this.velocity.heading() + PI/2;
+	draw() {
+		this.theta = this.velocity.heading() + PI / 2;
 		fill(255, 0, 255);
 		noStroke();
 		translate(this.position.x, this.position.y);
 		rotate(this.theta);
+
 		beginShape();
 		vertex(0, -predatorSize * 2);
 		vertex(-predatorSize, predatorSize * 2);
 		vertex(predatorSize, predatorSize * 2);
 		endShape(CLOSE);
+
 		rotate(-this.theta);
 		translate(-this.position.x, -this.position.y);
 	};
 
-	this.update = function() {
+	update() {
 		this.velocity.add(this.acceleration);
 		this.velocity.limit(this.speed);
 		this.position.add(this.velocity);
 		resetMatrix();
 
 		if (this.position.x < 0) {
-			this.position.x = width;
+			this.position.x += width;
 		}
 		else if (this.position.x > width) {
-			this.position.x = 0;
+			this.position.x -= width;
 		}
 		if (this.position.y < 0) {
-			this.position.y = height;
+			this.position.y += height;
 		}
 		else if (this.position.y > height) {
-			this.position.y = 0;
+			this.position.y -= height;
 		}
 
 		this.acceleration.mult(0);
 	};
 
-	this.pursue = function() {
+	pursue() {
 		let count = 0;
 		let target = createVector(0, 0);
 		for (let b in boids) {
@@ -219,7 +227,7 @@ function Predator(position, velocity, speed) {
 		}
 	};
 
-	this.space = function() {
+	space() {
 		let count = 0;
 		let target = createVector(0, 0);
 		for (let p in predators) {
@@ -241,7 +249,7 @@ function Predator(position, velocity, speed) {
 		}
 	};
 
-	this.eat = function() {
+	eat() {
 		let b;
 		for (b = boids.length - 1; b > -1; --b) {
 			let distance = dist(this.position.x, this.position.y, boids[b].position.x, boids[b].position.y);
@@ -258,28 +266,26 @@ function display() {
 	fill(0, 255, 179);
 
 	text("Number of Boids:" + boids.length, 6, height - 10);
-	if (cohesion) {
-		fill(0, 255, 0);
-	}
-	else {
-		fill(255, 0, 0);
-	}
+
+	// if (cohesion) { fill(0, 255, 0); } else { fill(255, 0, 0); }
+	cohesion ? fill(0, 255, 0) : fill(255, 0, 0);
 	text("Cohesion: " + cohesion, 6, height-54);
 
-	if (separation) {
-		fill(0, 255, 0);
-	}
-	else {
-		fill(255, 0, 0);
-	}
+	// if (separation) { fill(0, 255, 0);
+	// }
+	// else {
+	// 	fill(255, 0, 0);
+	// }
+	separation ? fill(0, 255, 0) : fill(255, 0, 0);
 	text("Separation: " + separation, 6, height-25);
 
-	if (alignment) {
+	/*if (alignment) {
 		fill(0, 255, 0);
 	}
 	else {
 		fill(255, 0, 0);
-	}
+	}*/
+	alignment ? fill(0, 255, 0) : fill(255, 0, 0);
 	text("Alignment: " + alignment, 6, height-40);
 
 }
@@ -312,7 +318,9 @@ function draw() {
 	for (let b in boids) {
 		for (let p in predators) {
 			boids[b].flee(predators[p]);
+			predators[p].pursue(boids[b]);
 		}
+
 		boids[b].align();
 		boids[b].space();
 		boids[b].cohesion();
@@ -321,9 +329,6 @@ function draw() {
 	}
 
 	for (let p in predators) {
-		for (let b in boids) {
-			predators[p].pursue(boids[b]);
-		}
 		predators[p].space();
 		predators[p].eat();
 		predators[p].update();
