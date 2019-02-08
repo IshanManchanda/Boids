@@ -1,13 +1,26 @@
 const height = 600;
 const width = 1200;
-const boidInitial = 30;
-const predatorInitial = 1;
+const area = width * height;
 
-const boidSize = width * height / 100000;
-const boidSight = width * height / 4000;
+const boidInitial = 100;
+const predatorInitial = 5;
 
+const boidSize = area / 100000;
 const predatorSize = boidSize * 1.2;
-const predatorSight = width * height / 2400;
+
+const boidSight = Math.max(area / 6000, boidSize * 2);
+const predatorSight = Math.max(area / 4200, predatorSize * 2);
+
+const boidSpeed = 8;
+const predatorSpeed = boidSpeed * 1.2;
+
+const boidAlignmentWeight = 2e1;
+const boidCohesionWeight = 1e0;
+const boidSeparationWeight = 5e3;
+const boidFleeWeight = 1e7;
+const predatorSeparationWeight = 5e3;
+const predatorPursueWeight = 2e1;
+
 
 let boids = [];
 let predators = [];
@@ -18,19 +31,20 @@ let separation = true;
 
 
 class Boid {
-	constructor(position, velocity, speed) {
+	constructor(position, velocity) {
 		velocity.normalize();
-		velocity.mult(speed);
+		velocity.mult(boidSpeed);
 		this.position = position;
-		this.speed = speed;
 		this.velocity = velocity;
 		this.acceleration = createVector(0, 0);
+		this.force_cohesion = createVector(0, 0);
+		this.force_separation = createVector(0, 0);
+		this.force_alignment = createVector(0, 0);
 	}
 
 	draw() {
-		this.theta = this.velocity.heading() + PI / 2;
+		this.theta = this.velocity.heading() + Math.PI / 2;
 		fill(0, 255, 50);
-		noStroke();
 		translate(this.position.x, this.position.y);
 		rotate(this.theta);
 
@@ -40,13 +54,19 @@ class Boid {
 		vertex(boidSize, boidSize * 2);
 		endShape(CLOSE);
 
+		// fill(255, 0, 0, 50);
+		// ellipse(0, 0, boidSight, boidSight);
+		// ellipse(0, 0, boidSize * 5, boidSize * 5);
+
 		rotate(-this.theta);
 		translate(-this.position.x, -this.position.y);
 	};
 
 	update() {
+		this.apply_forces();
+
 		this.velocity.add(this.acceleration);
-		this.velocity.limit(this.speed);
+		this.velocity.limit(boidSpeed);
 		this.position.add(this.velocity);
 		resetMatrix();
 
@@ -56,6 +76,7 @@ class Boid {
 		else if (this.position.x > width) {
 			this.position.x -= width;
 		}
+
 		if (this.position.y < 0) {
 			this.position.y += height;
 		}
@@ -66,11 +87,58 @@ class Boid {
 		this.acceleration.mult(0);
 	};
 
-	seek(target) {
+	apply_forces() {
+		for (let b in boids) {
+			let distance = dist(this.position.x, this.position.y, boids[b].position.x, boids[b].position.y);
+			// noinspection EqualityComparisonWithCoercionJS
+			if (distance == 0 || distance > boidSight) continue;
+
+			this.alignment(distance, boids[b].velocity);
+			this.cohesion(distance, boids[b].position);
+
+			if (distance > (boidSize * 6)) continue;
+			let angle = this.velocity.angleBetween(boids[b].velocity);
+			if (angle >= Math.PI) continue;
+
+			this.separation(distance, boids[b].position);
+		}
+
+		// REVIEW: Divide by counts?
+		this.force_alignment.mult(boidAlignmentWeight);
+		this.force_cohesion.normalize();
+		this.force_cohesion.mult(boidCohesionWeight);
+		this.force_separation.mult(boidSeparationWeight);
+
+		this.acceleration.add(this.force_alignment);
+		this.acceleration.add(this.force_cohesion);
+		this.acceleration.add(this.force_separation);
+
+		this.force_alignment.mult(0);
+		this.force_cohesion.mult(0);
+		this.force_separation.mult(0);
+	};
+
+	alignment(distance, velocity) {
+		let target = velocity.copy();
+		target.normalize();
+		target.div(distance);
+		this.force_alignment.add(target);
+	};
+
+	cohesion(distance, position) {
+		let target = position.copy();
 		target.sub(this.position);
 		target.normalize();
-		target.mult(this.speed);
-		this.acceleration.add(target);
+		this.force_cohesion.add(target);
+	};
+
+	separation(distance, position) {
+		let target = position.copy();
+		target.mult(-1);
+		target.add(this.position);
+		target.normalize();
+		target.div(distance * distance);
+		this.force_separation.add(target);
 	};
 
 	flee() {
@@ -88,63 +156,7 @@ class Boid {
 			target.div(count);
 			target.sub(this.position);
 			target.normalize();
-			target.mult(-this.speed);
-			this.acceleration.add(target);
-		}
-	};
-
-	align() {
-		let count = 0;
-		let target = createVector(0, 0);
-		for (let b in boids) {
-			let distance = dist(this.position.x, this.position.y, boids[b].position.x, boids[b].position.y);
-			if (distance < boidSight) {
-				target.add(boids[b].velocity);
-				count++;
-			}
-		}
-		if (count > 0) {
-			target.div(count);
-			target.normalize();
-			target.mult(this.speed);
-			this.acceleration.add(target);
-		}
-	};
-
-	cohesion() {
-		let count = 0;
-		let target = createVector(0, 0);
-		for (let b in boids) {
-			let distance = dist(this.position.x, this.position.y, boids[b].position.x, boids[b].position.y);
-			if (distance < boidSight) {
-				target.add(boids[b].position);
-				count++;
-			}
-		}
-		if (count > 0) {
-			target.div(count);
-			this.seek(target);
-		}
-	};
-
-	space() {
-		let count = 0;
-		let target = createVector(0, 0);
-		for (let b in boids) {
-			let distance = dist(this.position.x, this.position.y, boids[b].position.x, boids[b].position.y);
-			let angle = this.velocity.angleBetween(boids[b].velocity);
-
-			if ((distance < (boidSight / 4)) && (angle < PI)) {
-				target.sub(boids[b].position);
-				count++;
-			}
-		}
-
-		if (count > 0) {
-			target.div(count);
-			target.add(this.position);
-			target.normalize();
-			target.mult(this.speed * 2);
+			target.mult(-boidSpeed);
 			this.acceleration.add(target);
 		}
 	};
@@ -152,19 +164,17 @@ class Boid {
 
 
 class Predator {
-	constructor(position, velocity, speed) {
+	constructor(position, velocity) {
 		velocity.normalize();
-		velocity.mult(speed);
+		velocity.mult(predatorSpeed);
 		this.position = position;
-		this.speed = speed;
 		this.velocity = velocity;
 		this.acceleration = createVector(0, 0);
 	}
 
 	draw() {
-		this.theta = this.velocity.heading() + PI / 2;
+		this.theta = this.velocity.heading() + Math.PI / 2;
 		fill(255, 0, 255);
-		noStroke();
 		translate(this.position.x, this.position.y);
 		rotate(this.theta);
 
@@ -179,8 +189,10 @@ class Predator {
 	};
 
 	update() {
+		this.apply_forces();
+
 		this.velocity.add(this.acceleration);
-		this.velocity.limit(this.speed);
+		this.velocity.limit(predatorSpeed);
 		this.position.add(this.velocity);
 		resetMatrix();
 
@@ -200,63 +212,38 @@ class Predator {
 		this.acceleration.mult(0);
 	};
 
-	pursue() {
-		let count = 0;
-		let target = createVector(0, 0);
-		for (let b in boids) {
-			let distance = dist(this.position.x, this.position.y, boids[b].position.x, boids[b].position.y);
-			if (distance < predatorSight) {
-				target.add(p5.Vector.div(p5.Vector.sub(
-					p5.Vector.add(boids[b].position, boids[b].velocity),
-					this.position
-				), distance));
-				// target.add(boids[b].position.mult(predatorSight / distance));
-				// target.add(boids[b].velocity.mult(predatorSight / distance));
-				count++;
-			}
-		}
-		if (count > 0) {
-			console.log(target.x, target.y);
-			fill(255, 0, 0);
-			ellipse(target.x - 5, target.y - 5, 10, 10);
-			target.div(count);
-			// target.sub(this.position);
-			target.normalize();
-			target.mult(this.speed);
-			this.acceleration.add(target);
-		}
-	};
-
-	space() {
-		let count = 0;
-		let target = createVector(0, 0);
+	apply_forces() {
 		for (let p in predators) {
 			let distance = dist(this.position.x, this.position.y, predators[p].position.x, predators[p].position.y);
-			let angle = this.velocity.angleBetween(predators[p].velocity);
-
-			if ((distance < (predatorSight / 4)) && (angle < PI)) {
-				target.sub(predators[p].position);
-				count++;
+			if (distance < predatorSight) {
+				this.separation(distance, predators[p].position);
 			}
 		}
+	}
 
-		if (count > 0) {
-			target.div(count);
-			target.add(this.position);
-			target.normalize();
-			target.mult(this.speed * 2);
-			this.acceleration.add(target);
-		}
+	separation(distance, position) {
+		let target = position.copy();
+		target.mult(-1);
+		target.add(this.position);
+		target.normalize();
+		target.mult(predatorSeparationWeight / (distance * distance));
+		this.acceleration.add(target);
 	};
 
-	eat() {
-		let b;
-		for (b = boids.length - 1; b > -1; --b) {
-			let distance = dist(this.position.x, this.position.y, boids[b].position.x, boids[b].position.y);
-			if (distance <= (predatorSize + boidSize) * 2.4) {
-				boids.splice(b, 1);
-			}
-		}
+	pursue(distance, position, velocity) {
+		let target = position.copy();
+		target.sub(this.position);
+		target.add(velocity);
+		target.normalize();
+		target.mult(predatorPursueWeight);
+		target.div(distance);
+		this.acceleration.add(target);
+	};
+
+	// noinspection JSMethodCanBeStatic
+	eat(b) {
+		// TODO: Manage hunger.
+		boids.splice(b, 1);
 	};
 }
 
@@ -264,49 +251,57 @@ class Predator {
 function display() {
 	textSize(12);
 	fill(0, 255, 179);
-
 	text("Number of Boids:" + boids.length, 6, height - 10);
 
-	// if (cohesion) { fill(0, 255, 0); } else { fill(255, 0, 0); }
 	cohesion ? fill(0, 255, 0) : fill(255, 0, 0);
 	text("Cohesion: " + cohesion, 6, height-54);
 
-	// if (separation) { fill(0, 255, 0);
-	// }
-	// else {
-	// 	fill(255, 0, 0);
-	// }
 	separation ? fill(0, 255, 0) : fill(255, 0, 0);
 	text("Separation: " + separation, 6, height-25);
 
-	/*if (alignment) {
-		fill(0, 255, 0);
-	}
-	else {
-		fill(255, 0, 0);
-	}*/
 	alignment ? fill(0, 255, 0) : fill(255, 0, 0);
 	text("Alignment: " + alignment, 6, height-40);
 
 }
 
 
+function interaction() {
+	let b;
+	for (b = boids.length - 1; b >= 0; --b) {
+		for (let p in predators) {
+			let distance = dist(
+				boids[b].position.x, boids[b].position.y,
+				predators[p].position.x, predators[p].position.y
+			);
+
+			if (distance > predatorSight) return;
+			predators[p].pursue(distance, boids[b].position);
+
+			if (distance > boidSight) return;
+			boids[b].flee(distance, predators[p].position);
+
+			if (distance > (predatorSize + boidSize) * 2.4) return;
+			predators[p].eat(b);
+		}
+	}
+}
+
+
 function setup() {
 	createCanvas(width, height);
+	noStroke();
 	frameRate(30);
 
 	for (let i = 0; i < boidInitial; i++) {
 		boids.push(new Boid(
 			createVector(Math.floor(Math.random() * width), Math.floor(Math.random() * height)),
-			createVector(Math.floor(Math.random() * 8), Math.floor(Math.random() * 8)),
-			8
+			createVector(Math.floor(Math.random() * 8), Math.floor(Math.random() * 8))
 		))
 	}
 	for (let i = 0; i < predatorInitial; i++) {
 		predators.push(new Predator(
 			createVector(Math.floor(Math.random() * width), Math.floor(Math.random() * height)),
-			createVector(Math.floor(Math.random() * 8), Math.floor(Math.random() * 8)),
-			10
+			createVector(Math.floor(Math.random() * 8), Math.floor(Math.random() * 8))
 		))
 	}
 }
@@ -315,22 +310,14 @@ function setup() {
 function draw() {
 	background(0);
 
-	for (let b in boids) {
-		for (let p in predators) {
-			boids[b].flee(predators[p]);
-			predators[p].pursue(boids[b]);
-		}
+	interaction();
 
-		boids[b].align();
-		boids[b].space();
-		boids[b].cohesion();
+	for (let b in boids) {
 		boids[b].update();
 		boids[b].draw();
 	}
 
 	for (let p in predators) {
-		predators[p].space();
-		predators[p].eat();
 		predators[p].update();
 		predators[p].draw();
 	}
