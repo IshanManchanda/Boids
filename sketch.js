@@ -5,7 +5,7 @@ const area = width * height;
 const boidInitial = 100;
 const predatorInitial = 3;
 
-const boidSize = area / 100000;
+const boidSize = area / 1e5;
 const predatorSize = boidSize * 1.5;
 
 const boidSight = Math.max(area / 6000, boidSize * 2);
@@ -25,9 +25,17 @@ const predatorPursueWeight = 2e2;
 let boids = [];
 let predators = [];
 
+let state_drop = 0;
+const STATE_DROP_BOID = 1;
+const STATE_DROP_PREDATOR = 2;
+const STATE_DROP_OBSTACLE = 3;
+
 let cohesion = true;
 let alignment = true;
 let separation = true;
+
+// TODO: Create a common 'creature' class.
+//  Boids and Predators will inherit stuff from it.
 
 
 class Boid {
@@ -52,8 +60,8 @@ class Boid {
 		this.theta = this.velocity.heading() + Math.PI / 2;
 		translate(this.position.x, this.position.y);
 		rotate(this.theta);
-		// fill(this.r, this.g, this.b);
 		fill(0, 255, 0);
+		// fill(this.r, this.g, this.b);
 
 		// TODO: Use a p5.Image to draw
 		beginShape();
@@ -78,19 +86,12 @@ class Boid {
 		this.position.add(this.velocity);
 		resetMatrix();
 
-		if (this.position.x < 0) {
-			this.position.x += width;
-		}
-		else if (this.position.x > width) {
-			this.position.x -= width;
-		}
+		// TODO: 'Check bounds' common util in Creature class
+		if (this.position.x < 0) this.position.x += width;
+		else if (this.position.x > width) this.position.x -= width;
 
-		if (this.position.y < 0) {
-			this.position.y += height;
-		}
-		else if (this.position.y > height) {
-			this.position.y -= height;
-		}
+		if (this.position.y < 0) this.position.y += height;
+		else if (this.position.y > height) this.position.y -= height;
 
 		this.acceleration.mult(0);
 	};
@@ -99,9 +100,8 @@ class Boid {
 		if (!alignment && !cohesion && !separation) return;
 
 		for (let b in boids) {
-			let distance = dist(this.position.x, this.position.y, boids[b].position.x, boids[b].position.y);
-			// noinspection EqualityComparisonWithCoercionJS
-			if (distance == 0 || distance > boidSight) continue;
+			let distance = this.position.dist(boids[b].position);
+			if (distance === 0 || distance > boidSight) continue;
 
 			alignment && this.alignment(distance, boids[b].velocity);
 			cohesion && this.cohesion(distance, boids[b].position);
@@ -116,6 +116,8 @@ class Boid {
 		this.force_cohesion.normalize();
 
 		// REVIEW: Divide by counts?
+		// TODO: Create a utility function
+		//  to avoid code duplication
 		this.force_alignment.mult(boidAlignmentWeight);
 		this.force_cohesion.mult(boidCohesionWeight);
 		this.force_separation.mult(boidSeparationWeight);
@@ -205,26 +207,19 @@ class Predator {
 		this.position.add(this.velocity);
 		resetMatrix();
 
-		if (this.position.x < 0) {
-			this.position.x += width;
-		}
-		else if (this.position.x > width) {
-			this.position.x -= width;
-		}
-		if (this.position.y < 0) {
-			this.position.y += height;
-		}
-		else if (this.position.y > height) {
-			this.position.y -= height;
-		}
+		if (this.position.x < 0) this.position.x += width;
+		else if (this.position.x > width) this.position.x -= width;
+
+		if (this.position.y < 0) this.position.y += height;
+		else if (this.position.y > height) this.position.y -= height;
 
 		this.acceleration.mult(0);
 	};
 
 	apply_forces() {
 		for (let p in predators) {
-			let distance = dist(this.position.x, this.position.y, predators[p].position.x, predators[p].position.y);
-			if (distance == 0 || distance > predatorSight) continue;
+			let distance = this.position.dist(predator[p].position);
+			if (distance === 0 || distance > predatorSight) continue;
 			this.separation(distance, predators[p].position);
 		}
 
@@ -286,10 +281,7 @@ function interaction() {
 	for (b = boids.length - 1; b >= 0; --b) {
 		for (let p in predators) {
 			if (!boids[b]) continue;
-			let distance = dist(
-				boids[b].position.x, boids[b].position.y,
-				predators[p].position.x, predators[p].position.y
-			);
+			let distance = boids[b].position.dist(predators[p].position);
 
 			if (distance > predatorSight) continue;
 			predators[p].pursue(distance, boids[b].position);
@@ -311,15 +303,29 @@ function setup() {
 
 	for (let i = 0; i < boidInitial; i++) {
 		boids.push(new Boid(
-			createVector(Math.floor(Math.random() * width), Math.floor(Math.random() * height)),
-			createVector(Math.floor(Math.random() * 8), Math.floor(Math.random() * 8)),
-			Math.random() * 255, Math.random() * 255, Math.random() * 255
+			createVector(
+				Math.floor(Math.random() * width),
+				Math.floor(Math.random() * height)
+			),
+			createVector(
+				Math.floor(Math.random() * boidSpeed),
+				Math.floor(Math.random() * boidSpeed)
+			),
+			Math.random() * 255,
+			Math.random() * 255,
+			Math.random() * 255
 		))
 	}
 	for (let i = 0; i < predatorInitial; i++) {
 		predators.push(new Predator(
-			createVector(Math.floor(Math.random() * width), Math.floor(Math.random() * height)),
-			createVector(Math.floor(Math.random() * 8), Math.floor(Math.random() * 8))
+			createVector(
+				Math.floor(Math.random() * width),
+				Math.floor(Math.random() * height)
+			),
+			createVector(
+				Math.floor(Math.random() * predatorSpeed),
+				Math.floor(Math.random() * predatorSpeed)
+			)
 		))
 	}
 }
@@ -358,20 +364,42 @@ function keyPressed() {
 			break;
 
 		case 66:
-			// TODO: Drop boids
+			state_drop = STATE_DROP_BOID;
 			break;
 
 		case 80:
-			// TODO: Drop predator
+			state_drop = STATE_DROP_PREDATOR;
 			break;
 
 		case 79:
-			// TODO: Drop obstacle
+			state_drop = STATE_DROP_OBSTACLE;
 			break;
 	}
 }
 
 
 function mouseClicked() {
-
+	switch (state_drop) {
+		case STATE_DROP_BOID:
+			boids.push(new Boid(
+				createVector(mouseX, mouseY),
+				createVector(
+					Math.floor(Math.random() * boidSpeed),
+					Math.floor(Math.random() * boidSpeed)
+				),
+				Math.random() * 255,
+				Math.random() * 255,
+				Math.random() * 255
+			));
+			break;
+		case STATE_DROP_PREDATOR:
+			predators.push(new Predator(
+				createVector(MouseX, MouseY),
+				createVector(
+					Math.floor(Math.random() * predatorSpeed),
+					Math.floor(Math.random() * predatorSpeed)
+				)
+			));
+			break;
+	}
 }
