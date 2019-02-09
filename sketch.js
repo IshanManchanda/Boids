@@ -2,11 +2,11 @@ const height = 600;
 const width = 1200;
 const area = width * height;
 
-const boidInitial = 200;
-const predatorInitial = 0;
+const boidInitial = 100;
+const predatorInitial = 3;
 
 const boidSize = area / 100000;
-const predatorSize = boidSize * 1.2;
+const predatorSize = boidSize * 1.5;
 
 const boidSight = Math.max(area / 6000, boidSize * 2);
 const predatorSight = Math.max(area / 4200, predatorSize * 2);
@@ -31,12 +31,16 @@ let separation = true;
 
 
 class Boid {
-	constructor(position, velocity) {
+	constructor(position, velocity, r, g, b) {
 		velocity.normalize();
 		velocity.mult(boidSpeed);
 		this.position = position;
 		this.velocity = velocity;
 		this.acceleration = createVector(0, 0);
+
+		this.r = r;
+		this.g = g;
+		this.b = b;
 
 		this.force_cohesion = createVector(0, 0);
 		this.force_separation = createVector(0, 0);
@@ -48,7 +52,8 @@ class Boid {
 		this.theta = this.velocity.heading() + Math.PI / 2;
 		translate(this.position.x, this.position.y);
 		rotate(this.theta);
-		fill(0, 255, 50);
+		// fill(this.r, this.g, this.b);
+		fill(0, 255, 0);
 
 		// TODO: Use a p5.Image to draw
 		beginShape();
@@ -307,7 +312,8 @@ function setup() {
 	for (let i = 0; i < boidInitial; i++) {
 		boids.push(new Boid(
 			createVector(Math.floor(Math.random() * width), Math.floor(Math.random() * height)),
-			createVector(Math.floor(Math.random() * 8), Math.floor(Math.random() * 8))
+			createVector(Math.floor(Math.random() * 8), Math.floor(Math.random() * 8)),
+			Math.random() * 255, Math.random() * 255, Math.random() * 255
 		))
 	}
 	for (let i = 0; i < predatorInitial; i++) {
