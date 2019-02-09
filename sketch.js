@@ -25,10 +25,10 @@ const predatorPursueWeight = 2e2;
 let boids = [];
 let predators = [];
 
-let state_drop = 0;
-const STATE_DROP_BOID = 1;
-const STATE_DROP_PREDATOR = 2;
-const STATE_DROP_OBSTACLE = 3;
+// let state_drop = 0;
+// const STATE_DROP_BOID = 1;
+// const STATE_DROP_PREDATOR = 2;
+// const STATE_DROP_OBSTACLE = 3;
 
 let cohesion = true;
 let alignment = true;
@@ -218,7 +218,7 @@ class Predator {
 
 	apply_forces() {
 		for (let p in predators) {
-			let distance = this.position.dist(predator[p].position);
+			let distance = this.position.dist(predators[p].position);
 			if (distance === 0 || distance > predatorSight) continue;
 			this.separation(distance, predators[p].position);
 		}
@@ -362,44 +362,34 @@ function keyPressed() {
 		case 83:
 			separation = !separation;
 			break;
-
-		case 66:
-			state_drop = STATE_DROP_BOID;
-			break;
-
-		case 80:
-			state_drop = STATE_DROP_PREDATOR;
-			break;
-
-		case 79:
-			state_drop = STATE_DROP_OBSTACLE;
-			break;
 	}
 }
 
 
 function mouseClicked() {
-	switch (state_drop) {
-		case STATE_DROP_BOID:
-			boids.push(new Boid(
-				createVector(mouseX, mouseY),
-				createVector(
-					Math.floor(Math.random() * boidSpeed),
-					Math.floor(Math.random() * boidSpeed)
-				),
-				Math.random() * 255,
-				Math.random() * 255,
-				Math.random() * 255
-			));
-			break;
-		case STATE_DROP_PREDATOR:
-			predators.push(new Predator(
-				createVector(MouseX, MouseY),
-				createVector(
-					Math.floor(Math.random() * predatorSpeed),
-					Math.floor(Math.random() * predatorSpeed)
-				)
-			));
-			break;
+	if (!keyIsPressed) return;
+	if (keyIsDown(66)) {
+		boids.push(new Boid(
+			createVector(mouseX, mouseY),
+			createVector(
+				Math.floor(Math.random() * boidSpeed),
+				Math.floor(Math.random() * boidSpeed)
+			),
+			Math.random() * 255,
+			Math.random() * 255,
+			Math.random() * 255
+		));
+	}
+	if (keyIsDown(80)) {
+		predators.push(new Predator(
+			createVector(mouseX, mouseY),
+			createVector(
+				Math.floor(Math.random() * predatorSpeed),
+				Math.floor(Math.random() * predatorSpeed)
+			)
+		));
+	}
+	if (keyIsDown(79)) {
+		// TODO: Drop obstacle
 	}
 }
