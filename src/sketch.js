@@ -1,16 +1,17 @@
 function display() {
 	textSize(12);
 	fill(0, 255, 179);
-	text("Number of Boids:" + boids.length, 6, height - 10);
+	text("Number of Boids: " + boids.length, 6, height - 25);
+	text("Number of Predators: " + predators.length, 6, height - 10);
 
 	cohesion ? fill(0, 255, 0) : fill(255, 0, 0);
-	text((cohesion) ? "Cohesion: ON" : "Cohesion: OFF", 6, height - 54);
-
-	separation ? fill(0, 255, 0) : fill(255, 0, 0);
-	text((separation) ? "Separation: ON" : "Separation: OFF", 6, height - 25);
+	text((cohesion) ? "Cohesion: ON" : "Cohesion: OFF", 6, height - 70);
 
 	alignment ? fill(0, 255, 0) : fill(255, 0, 0);
-	text((alignment) ? "Alignment: ON" : "Alignment: OFF", 6, height - 40);
+	text((alignment) ? "Alignment: ON" : "Alignment: OFF", 6, height - 55);
+
+	separation ? fill(0, 255, 0) : fill(255, 0, 0);
+	text((separation) ? "Separation: ON" : "Separation: OFF", 6, height - 40);
 }
 
 

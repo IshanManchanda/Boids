@@ -20,8 +20,8 @@ class Predator extends Creature{
 		endShape(CLOSE);
 
 		// Draw Sight Region
-		fill(255, 0, 0, 30);
-		ellipse(0, 0, predatorSight, predatorSight);
+		// fill(255, 0, 0, 30);
+		// ellipse(0, 0, predatorSight, predatorSight);
 
 		rotate(-this.theta);
 		translate(-this.position.x, -this.position.y);

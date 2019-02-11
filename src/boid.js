@@ -22,7 +22,7 @@ class Boid extends Creature {
 		vertex(boidSize, boidSize * 2);
 		endShape(CLOSE);
 
-		// Draw Vicinity and Sight Region
+		// Draw Vicinity and Sight Regions
 		// fill(255, 0, 0, 30);
 		// ellipse(0, 0, boidSight, boidSight);
 		// ellipse(0, 0, boidVicinity, boidVicinity);
@@ -44,7 +44,10 @@ class Boid extends Creature {
 	};
 
 	apply_forces() {
-		if (!alignment && !cohesion && !separation) return;
+		if (!alignment && !cohesion && !separation) {
+			this.apply_force(this.force_flee, boidFleeWeight);
+			return;
+		}
 
 		for (let b in boids) {
 			let distance = this.position.dist(boids[b].position);
@@ -61,8 +64,6 @@ class Boid extends Creature {
 		}
 
 		this.force_cohesion.normalize();
-
-		// REVIEW: Divide by counts?
 		this.apply_force(this.force_alignment, boidAlignmentWeight);
 		this.apply_force(this.force_cohesion, boidCohesionWeight);
 		this.apply_force(this.force_separation, boidSeparationWeight);

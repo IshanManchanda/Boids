@@ -14,16 +14,16 @@ const boidSight = Math.max(area / 6000, boidSize * 2);
 const predatorSight = Math.max(area / 4200, predatorSize * 2);
 
 const boidSpeed = 8;
-const predatorSpeed = boidSpeed * 1.2;
+const predatorSpeed = boidSpeed * 1.1;
 
 
 const boidAlignmentWeight = 2e1;
 const boidCohesionWeight = 1e0;
-const boidSeparationWeight = 5e3;
-const boidFleeWeight = 1e3;
+const boidSeparationWeight = 1e4;
+const boidFleeWeight = 1e4;
 
-const predatorSeparationWeight = 5e4;
-const predatorPursueWeight = 2e2;
+const predatorSeparationWeight = 1e5;
+const predatorPursueWeight = 5e2;
 
 
 let boids = [];
