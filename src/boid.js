@@ -68,8 +68,14 @@ class Boid extends Creature {
 		let y1 = Math.max(0, this.col - 1);
 		let y2 = Math.min(grid_height, this.col + 1);
 
-		for (let x = x1; x < x2; x++) {
-			for (let y = y1; y < y2; y++) {
+		for (let x = x1; x <= x2; x++) {
+			for (let y = y1; y <= y2; y++) {
+
+				// fill(150, 150, 150);
+				// square(
+				// 	x * grid_resolution, y * grid_resolution, grid_resolution
+				// );
+
 				for (let z = 0; z < grid_boids[x][y].length; z++) {
 					let b = grid_boids[x][y][z];
 					if (!boids[b]) continue;

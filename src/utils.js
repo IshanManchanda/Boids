@@ -3,6 +3,8 @@ function empty_grid() {
 	for (let i = 0; i < grid_width + 1; i++) {
 		a.push([]);
 		for (let j = 0; j < grid_height + 1; j++) {
+			// fill(200, 50, 200);
+			// ellipse(i * grid_resolution, j * grid_resolution, 5, 5);
 			a[i].push([]);
 		}
 	}
@@ -51,15 +53,16 @@ function interaction() {
 	for (let b = boids.length - 1; b >= 0; --b) {
 		if (!boids[b]) continue;
 
-		let x1 = Math.max(0, boids[b].row - 1);
-		let x2 = Math.min(grid_width, boids[b].row + 1);
-		let y1 = Math.max(0, boids[b].col - 1);
-		let y2 = Math.min(grid_height, boids[b].col + 1);
+		let x1 = Math.max(0, boids[b].row - 2);
+		let x2 = Math.min(grid_width, boids[b].row + 2);
+		let y1 = Math.max(0, boids[b].col - 2);
+		let y2 = Math.min(grid_height, boids[b].col + 2);
 
-		for (let x = x1; x < x2; x++) {
-			for (let y = y1; y < y2; y++) {
+		for (let x = x1; x <= x2; x++) {
+			for (let y = y1; y <= y2; y++) {
 				for (let z = 0; z < grid_predators[x][y].length; z++) {
 					let p = grid_predators[x][y][z];
+					if (!predators[p]) continue;
 					let distance = boids[b].position.dist(predators[p].position);
 
 					if (distance > predatorSight) continue;
