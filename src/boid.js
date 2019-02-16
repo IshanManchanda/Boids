@@ -49,7 +49,7 @@ class Boid extends Creature {
 			return;
 		}
 
-		for (let b in boids) {
+		/*for (let b in boids) {
 			let distance = this.position.dist(boids[b].position);
 			if (distance === 0 || distance > boidSight) continue;
 
@@ -61,6 +61,32 @@ class Boid extends Creature {
 			if (angle >= Math.PI) continue;
 
 			this.separation(distance, boids[b].position);
+		}*/
+
+		let x1 = Math.max(0, this.row - 1);
+		let x2 = Math.min(grid_width, this.row + 1);
+		let y1 = Math.max(0, this.col - 1);
+		let y2 = Math.min(grid_height, this.col + 1);
+
+		for (let x = x1; x < x2; x++) {
+			for (let y = y1; y < y2; y++) {
+				for (let z = 0; z < grid_boids[x][y].length; z++) {
+					let b = grid_boids[x][y][z];
+					if (!boids[b]) continue;
+
+					let distance = this.position.dist(boids[b].position);
+					if (distance === 0 || distance > boidSight) continue;
+
+					alignment && this.alignment(distance, boids[b].velocity);
+					cohesion && this.cohesion(distance, boids[b].position);
+
+					if (!separation || distance > (boidVicinity)) continue;
+					let angle = this.velocity.angleBetween(boids[b].velocity);
+					if (angle >= Math.PI) continue;
+
+					this.separation(distance, boids[b].position);
+				}
+			}
 		}
 
 		this.force_cohesion.normalize();

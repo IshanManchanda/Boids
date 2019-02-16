@@ -27,7 +27,13 @@ const predatorPursueWeight = 5e2;
 
 
 let boids = [];
+let grid_boids = [];
+let grid_predators = [];
 let predators = [];
+
+const grid_resolution = predatorSight / 2;
+const grid_width = (width / grid_resolution);
+const grid_height = (height / grid_resolution);
 
 let cohesion = true;
 let alignment = true;

@@ -5,6 +5,8 @@ class Creature {
 		this.velocity = velocity;
 		this.acceleration = createVector(0, 0);
 		this.alive = true;
+		this.row = 0;
+		this.col = 0;
 	}
 
 	check_bounds() {

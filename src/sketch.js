@@ -1,40 +1,3 @@
-function display() {
-	textSize(12);
-	fill(0, 255, 179);
-	text("Number of Boids: " + boids.length, 6, height - 25);
-	text("Number of Predators: " + predators.length, 6, height - 10);
-
-	cohesion ? fill(0, 255, 0) : fill(255, 0, 0);
-	text((cohesion) ? "Cohesion: ON" : "Cohesion: OFF", 6, height - 70);
-
-	alignment ? fill(0, 255, 0) : fill(255, 0, 0);
-	text((alignment) ? "Alignment: ON" : "Alignment: OFF", 6, height - 55);
-
-	separation ? fill(0, 255, 0) : fill(255, 0, 0);
-	text((separation) ? "Separation: ON" : "Separation: OFF", 6, height - 40);
-}
-
-
-function interaction() {
-	let b;
-	for (b = boids.length - 1; b >= 0; --b) {
-		for (let p in predators) {
-			if (!boids[b]) continue;
-			let distance = boids[b].position.dist(predators[p].position);
-
-			if (distance > predatorSight) continue;
-			predators[p].pursue(distance, boids[b].position);
-
-			if (distance > boidSight) continue;
-			boids[b].flee(distance, predators[p].position);
-
-			if (distance > (predatorSize + boidSize) * 2.4) continue;
-			predators[p].eat(b);
-		}
-	}
-}
-
-
 function setup() {
 	createCanvas(width, height);
 	noStroke();
@@ -46,13 +9,7 @@ function setup() {
 				Math.floor(Math.random() * width),
 				Math.floor(Math.random() * height)
 			),
-			createVector(
-				Math.floor(Math.random() * boidSpeed),
-				Math.floor(Math.random() * boidSpeed)
-			),
-			Math.random() * 255,
-			Math.random() * 255,
-			Math.random() * 255
+			createVector(Math.random(), Math.random())
 		))
 	}
 	for (let i = 0; i < predatorInitial; i++) {
@@ -61,10 +18,7 @@ function setup() {
 				Math.floor(Math.random() * width),
 				Math.floor(Math.random() * height)
 			),
-			createVector(
-				Math.floor(Math.random() * predatorSpeed),
-				Math.floor(Math.random() * predatorSpeed)
-			)
+			createVector(Math.random(), Math.random())
 		))
 	}
 }
@@ -72,6 +26,7 @@ function setup() {
 
 function draw() {
 	background(0);
+	populate_grid();
 	interaction();
 
 	for (let b in boids) {
@@ -110,22 +65,13 @@ function mouseClicked() {
 	if (keyIsDown(66)) {
 		boids.push(new Boid(
 			createVector(mouseX, mouseY),
-			createVector(
-				Math.floor(Math.random() * boidSpeed),
-				Math.floor(Math.random() * boidSpeed)
-			),
-			Math.random() * 255,
-			Math.random() * 255,
-			Math.random() * 255
+			createVector(Math.random(), Math.random())
 		));
 	}
 	if (keyIsDown(80)) {
 		predators.push(new Predator(
 			createVector(mouseX, mouseY),
-			createVector(
-				Math.floor(Math.random() * predatorSpeed),
-				Math.floor(Math.random() * predatorSpeed)
-			)
+			createVector(Math.random(), Math.random())
 		));
 	}
 	if (keyIsDown(79)) {
