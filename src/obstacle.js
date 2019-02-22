@@ -3,6 +3,7 @@ class Obstacle {
 		this.position = position;
 		this.radius = radius;
 		this.lifespan = 10000;
+		this.active = true;
 	}
 
 	draw() {

@@ -5,6 +5,7 @@ class Predator extends Creature{
 		this.velocity.mult(predatorSpeed);
 		this.force_separation = createVector(0, 0);
 		this.force_pursue = createVector(0, 0);
+		this.hunger = 0;
 	}
 
 	draw() {
@@ -28,6 +29,11 @@ class Predator extends Creature{
 	};
 
 	update() {
+		this.hunger++;
+		if (this.hunger >= predatorHungerLimit) {
+			this.alive = false;
+			return;
+		}
 		this.apply_forces();
 
 		this.velocity.add(this.acceleration);
@@ -68,9 +74,8 @@ class Predator extends Creature{
 		this.force_pursue.add(target);
 	};
 
-	// noinspection JSMethodCanBeStatic
 	eat(b) {
-		// TODO: Manage hunger.
+		this.hunger = 0;
 		boids.splice(b, 1);
 	};
 }

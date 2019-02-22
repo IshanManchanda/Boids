@@ -28,28 +28,6 @@ function display() {
 }
 
 function interaction() {
-	/*for (let x = 0; x < grid_width; x++) {
-		for (let y = 0; y < grid_height; y++) {
-			for (let z = grid[x][y].length - 1; z >= 0; z--) {
-				b = grid[x][y][z];
-
-				for (
-					let x1 = Math.max(0, x - 1);
-					x1 < Math.min(grid_width, x + 1);
-					x1++
-				) {
-					for (
-						let y1 = Math.max(0, y - 1);
-						y1 < Math.min(grid_height, y + 1);
-						y1++
-					) {
-
-					}
-				}
-			}
-		}
-	}*/
-
 	for (let b = boids.length - 1; b >= 0; --b) {
 		if (!boids[b]) continue;
 
@@ -60,11 +38,15 @@ function interaction() {
 
 		for (let x = x1; x <= x2; x++) {
 			for (let y = y1; y <= y2; y++) {
-				for (let z = 0; z < grid_predators[x][y].length; z++) {
+				for (let z = grid_predators[x][y].length; z >= 0; z--) {
 					let p = grid_predators[x][y][z];
 					if (!predators[p]) continue;
-					let distance = boids[b].position.dist(predators[p].position);
+					if (!predators[p].alive) {
+						predators.splice(p, 1);
+						continue;
+					}
 
+					let distance = boids[b].position.dist(predators[p].position);
 					if (distance > predatorSight) continue;
 					predators[p].pursue(distance, boids[b].position);
 
@@ -76,22 +58,6 @@ function interaction() {
 				}
 			}
 		}
-
-
-		/*for (let p in predators) {
-			if (!boids[b]) continue;
-
-			let distance = boids[b].position.dist(predators[p].position);
-
-			if (distance > predatorSight) continue;
-			predators[p].pursue(distance, boids[b].position);
-
-			if (distance > boidSight) continue;
-			boids[b].flee(distance, predators[p].position);
-
-			if (distance > (predatorSize + boidSize) * 2.4) continue;
-			predators[p].eat(b);
-		}*/
 	}
 }
 

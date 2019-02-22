@@ -3,8 +3,8 @@ const width = 1200;
 const area = width * height;
 
 
-const boidInitial = 500;
-const predatorInitial = 2;
+const boidInitial = 0;
+const predatorInitial = 3;
 
 const boidSize = Math.sqrt(area) / 1.5e2;
 const boidVicinity = boidSize * 6;
@@ -15,6 +15,7 @@ const predatorSight = Math.max(area / 4200, predatorSize * 2);
 
 const boidSpeed = area / 1e5;
 const predatorSpeed = boidSpeed * 1.1;
+const predatorHungerLimit = 450;
 
 
 const boidAlignmentWeight = 2e1;
