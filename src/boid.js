@@ -23,9 +23,9 @@ class Boid extends Creature {
 		endShape(CLOSE);
 
 		// Draw Vicinity and Sight Regions
-		// fill(255, 0, 0, 30);
-		// ellipse(0, 0, boidSight, boidSight);
-		// ellipse(0, 0, boidVicinity, boidVicinity);
+		fill(255, 0, 0, 30);
+		ellipse(0, 0, boidSight, boidSight);
+		ellipse(0, 0, boidVicinity, boidVicinity);
 
 		rotate(-this.theta);
 		translate(-this.position.x, -this.position.y);
@@ -64,20 +64,20 @@ class Boid extends Creature {
 		}*/
 
 		let x1 = Math.max(0, this.row - 1);
-		let x2 = Math.min(grid_width, this.row + 1);
+		let x2 = Math.min(horizontalCells, this.row + 1);
 		let y1 = Math.max(0, this.col - 1);
-		let y2 = Math.min(grid_height, this.col + 1);
+		let y2 = Math.min(verticalCells, this.col + 1);
 
 		for (let x = x1; x <= x2; x++) {
 			for (let y = y1; y <= y2; y++) {
 
 				// fill(150, 150, 150);
 				// square(
-				// 	x * grid_resolution, y * grid_resolution, grid_resolution
+				// 	x * gridResolution, y * gridResolution, gridResolution
 				// );
 
-				for (let z = 0; z < grid_boids[x][y].length; z++) {
-					let b = grid_boids[x][y][z];
+				for (let z = 0; z < gridBoids[x][y].length; z++) {
+					let b = gridBoids[x][y][z];
 					if (!boids[b]) continue;
 
 					let distance = this.position.dist(boids[b].position);
@@ -132,10 +132,4 @@ class Boid extends Creature {
 		target.div(-distance);
 		this.force_flee.add(target);
 	};
-
-
-	fitness() {
-		// TODO: Calculate fitness
-		return 0;
-	}
 }

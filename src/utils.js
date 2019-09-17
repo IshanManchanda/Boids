@@ -1,14 +1,20 @@
 function empty_grid() {
 	let a = [];
-	for (let i = 0; i < grid_width + 1; i++) {
+	for (let i = 0; i < horizontalCells + 1; i++) {
 		a.push([]);
-		for (let j = 0; j < grid_height + 1; j++) {
-			// fill(200, 50, 200);
-			// ellipse(i * grid_resolution, j * grid_resolution, 5, 5);
+		for (let j = 0; j < verticalCells + 1; j++) {
+			fill(200, 50, 200);
+			ellipse(i * gridResolution, j * gridResolution, 5, 5);
 			a[i].push([]);
 		}
 	}
 	return a
+}
+
+function int(n) {
+	// ORing a number with 0 returns it's integral value.
+	// We use this because it is much faster than Math / parseInt functions.
+	return n | 0;
 }
 
 function display() {
@@ -32,14 +38,14 @@ function interaction() {
 		if (!boids[b]) continue;
 
 		let x1 = Math.max(0, boids[b].row - 2);
-		let x2 = Math.min(grid_width, boids[b].row + 2);
+		let x2 = Math.min(horizontalCells, boids[b].row + 2);
 		let y1 = Math.max(0, boids[b].col - 2);
-		let y2 = Math.min(grid_height, boids[b].col + 2);
+		let y2 = Math.min(verticalCells, boids[b].col + 2);
 
 		for (let x = x1; x <= x2; x++) {
 			for (let y = y1; y <= y2; y++) {
-				for (let z = grid_predators[x][y].length; z >= 0; z--) {
-					let p = grid_predators[x][y][z];
+				for (let z = gridPredators[x][y].length; z >= 0; z--) {
+					let p = gridPredators[x][y][z];
 					if (!predators[p]) continue;
 					if (!predators[p].alive) {
 						predators.splice(p, 1);
@@ -62,21 +68,27 @@ function interaction() {
 }
 
 function populate_grid() {
-	grid_boids = empty_grid();
-	grid_predators = empty_grid();
+	gridBoids = empty_grid();
+	gridPredators = empty_grid();
 
 	for (let b in boids) {
-		let x = int(boids[b].position.x / grid_resolution);
-		let y = int(boids[b].position.y / grid_resolution);
-		grid_boids[x][y].push(b);
+		let x = int(boids[b].position.x / gridResolution);
+		let y = int(boids[b].position.y / gridResolution);
+		x = Math.min(x, horizontalCells);
+		y = Math.min(x, verticalCells);
+
+		gridBoids[x][y].push(b);
 		boids[b].row = x;
 		boids[b].col = y;
 	}
 
 	for (let p in predators) {
-		let x = int(predators[p].position.x / grid_resolution);
-		let y = int(predators[p].position.y / grid_resolution);
-		grid_predators[x][y].push(p);
+		let x = int(predators[p].position.x / gridResolution);
+		let y = int(predators[p].position.y / gridResolution);
+		x = Math.min(x, horizontalCells);
+		y = Math.min(x, verticalCells);
+
+		gridPredators[x][y].push(p);
 		predators[p].row = x;
 		predators[p].col = y;
 	}

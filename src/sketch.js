@@ -1,7 +1,36 @@
+p5.disableFriendlyErrors = true;
+
+
+function checkWindowSize() {
+	// Allow up to 16.5% less than 1024 x 768
+	if (Math.max(windowWidth, windowHeight) < 855 ||
+		Math.min(windowWidth, windowHeight) < 642) {
+		screen = -1;  // Screen too small
+	}
+
+	// Screen ratio
+	const r = windowWidth / windowHeight;
+	if (r < 1) {
+		screen = -2;  // Incorrect orientation
+	}
+
+	if (Math.abs(r - (16 / 9)) < 0.01) {
+		ratio = 16;
+	} else if (Math.abs(r - (8 / 5)) < 0.01) {
+		ratio = 8;
+	} else if (Math.abs(r - (4 / 3)) < 0.01) {
+		ratio = 4;
+	} else {
+		screen = -3;  // Unsupported aspect ratio
+	}
+}
+
 function setup() {
-	createCanvas(width, height);
+	createCanvas(windowWidth, windowHeight);
 	noStroke();
 	frameRate(30);
+	checkWindowSize();
+	setGlobals();
 
 	for (let i = 0; i < boidInitial; i++) {
 		boids.push(new Boid(
@@ -21,6 +50,12 @@ function setup() {
 			createVector(Math.random(), Math.random())
 		))
 	}
+}
+
+function windowResized() {
+	resizeCanvas(windowWidth, windowHeight);
+	checkWindowSize();
+	setGlobals();
 }
 
 

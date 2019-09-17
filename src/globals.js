@@ -1,22 +1,13 @@
-const height = 600;
-const width = 1200;
-const area = width * height;
-
+let screen = -1;
+let width, height, area, ratio;
+let gridResolution, horizontalCells, verticalCells;
 
 const boidInitial = 0;
-const predatorInitial = 3;
+const predatorInitial = 0;
 
-const boidSize = Math.sqrt(area) / 1.5e2;
-const boidVicinity = boidSize * 6;
-const predatorSize = boidSize * 1.5;
-
-const boidSight = Math.max(area / 6000, boidSize * 2);
-const predatorSight = Math.max(area / 4200, predatorSize * 2);
-
-const boidSpeed = area / 1e5;
-const predatorSpeed = boidSpeed * 1.1;
-const predatorHungerLimit = 450;
-
+let boidSize, boidVicinity, boidSight;
+let predatorSize, predatorVicinity, predatorSight;
+let boidSpeed, predatorSpeed;
 
 const boidAlignmentWeight = 2e1;
 const boidCohesionWeight = 1e0;
@@ -25,17 +16,51 @@ const boidFleeWeight = 1e5;
 
 const predatorSeparationWeight = 1e5;
 const predatorPursueWeight = 5e2;
-
+const predatorHungerLimit = 450;
 
 let boids = [];
-let grid_boids = [];
-let grid_predators = [];
 let predators = [];
-
-const grid_resolution = predatorSight / 2;
-const grid_width = (width / grid_resolution);
-const grid_height = (height / grid_resolution);
+let gridBoids = [];
+let gridPredators = [];
 
 let cohesion = true;
 let alignment = true;
 let separation = true;
+
+
+function setGlobals() {
+	width = windowWidth;
+	height = windowHeight;
+	area = windowWidth * windowHeight;
+
+	boidSize = Math.sqrt(area) / 1.5e2;
+	boidVicinity = boidSize * 6;
+	boidSight = Math.max(area / 6000, boidSize * 10);
+
+	predatorSize = boidSize * 1.5;
+	predatorVicinity = predatorSize * 2;
+	predatorSight = Math.max(area / 4200, predatorSize * 4);
+
+	boidSpeed = area / 1e5;
+	predatorSpeed = boidSpeed * 1.1;
+
+	gridResolution = predatorSight / 2;
+	horizontalCells = int(width / gridResolution);
+	verticalCells = int(height / gridResolution);
+
+	console.log('width ' + width);
+	console.log('height ' + height);
+	console.log('area ' + area);
+	console.log('bsize ' + boidSize);
+	console.log('bvic ' + boidVicinity);
+	console.log('bsight ' + boidSight);
+	console.log('psize ' + predatorSize);
+	console.log('pvic ' + predatorVicinity);
+	console.log('psight ' + predatorSight);
+	console.log('bspeed ' + boidSpeed);
+	console.log('pspeed ' + predatorSpeed);
+	console.log('res ' + gridResolution);
+	console.log('hcells ' + horizontalCells);
+	console.log('vcells ' + verticalCells);
+
+}
