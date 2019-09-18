@@ -1,4 +1,4 @@
-class Predator extends Creature{
+class Predator extends Creature {
 	constructor(position, velocity) {
 		super(position, velocity);
 
@@ -21,8 +21,9 @@ class Predator extends Creature{
 		endShape(CLOSE);
 
 		// Draw Sight Region
-		// fill(255, 0, 0, 30);
-		// ellipse(0, 0, predatorSight, predatorSight);
+		fill(255, 0, 0, 30);
+		ellipse(0, 0, predatorSight, predatorSight);
+		ellipse(0, 0, predatorVicinity, predatorVicinity);
 
 		rotate(-this.theta);
 		translate(-this.position.x, -this.position.y);

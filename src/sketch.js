@@ -38,7 +38,7 @@ function setup() {
 				Math.floor(Math.random() * width),
 				Math.floor(Math.random() * height)
 			),
-			createVector(Math.random(), Math.random())
+			createVector(Math.random() - 0.5, Math.random() - 0.5)
 		))
 	}
 	for (let i = 0; i < predatorInitial; i++) {
@@ -100,13 +100,13 @@ function mouseClicked() {
 	if (keyIsDown(66)) {
 		boids.push(new Boid(
 			createVector(mouseX, mouseY),
-			createVector(Math.random(), Math.random())
+			createVector(Math.random() - 0.5, Math.random() - 0.5)
 		));
 	}
 	if (keyIsDown(80)) {
 		predators.push(new Predator(
 			createVector(mouseX, mouseY),
-			createVector(Math.random(), Math.random())
+			createVector(Math.random() - 0.5, Math.random() - 0.5)
 		));
 	}
 	if (keyIsDown(79)) {
