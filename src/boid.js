@@ -63,18 +63,16 @@ class Boid extends Creature {
 			this.separation(distance, boids[b].position);
 		}*/
 
-		let x1 = Math.max(0, this.row - 1);
-		let x2 = Math.min(horizontalCells, this.row + 1);
-		let y1 = Math.max(0, this.col - 1);
-		let y2 = Math.min(verticalCells, this.col + 1);
+		let x1 = Math.max(0, this.col - 1);
+		let x2 = Math.min(horizontalCells, this.col + 1);
+		let y1 = Math.max(0, this.row - 1);
+		let y2 = Math.min(verticalCells, this.row + 1);
 
 		for (let x = x1; x <= x2; x++) {
 			for (let y = y1; y <= y2; y++) {
 
 				// fill(150, 150, 150);
-				// square(
-				// 	x * gridResolution, y * gridResolution, gridResolution
-				// );
+				// square(x * gridResolution, y * gridResolution, gridResolution);
 
 				for (let z = 0; z < gridBoids[x][y].length; z++) {
 					let b = gridBoids[x][y][z];

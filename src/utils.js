@@ -20,6 +20,7 @@ function int(n) {
 function display() {
 	textSize(12);
 	fill(0, 255, 179);
+	text('FPS: ' + Math.round(frameRate()), 6, height - 85);
 	text("Number of Boids: " + boids.length, 6, height - 25);
 	text("Number of Predators: " + predators.length, 6, height - 10);
 
@@ -74,12 +75,15 @@ function populate_grid() {
 	for (let b in boids) {
 		let x = int(boids[b].position.x / gridResolution);
 		let y = int(boids[b].position.y / gridResolution);
-		x = Math.min(x, horizontalCells);
-		y = Math.min(x, verticalCells);
+		console.log('xpos: ' + boids[b].position.x);
+		console.log('x: ' + y + ' y: ' + y);
+		// x = Math.min(x, horizontalCells);
+		// y = Math.min(y, verticalCells);
+		// console.log('xmin: ' + y + ' ymin: ' + y);
 
 		gridBoids[x][y].push(b);
-		boids[b].row = x;
-		boids[b].col = y;
+		boids[b].row = y;
+		boids[b].col = x;
 	}
 
 	for (let p in predators) {
