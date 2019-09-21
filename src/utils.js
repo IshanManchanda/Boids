@@ -1,13 +1,21 @@
 function empty_grid() {
 	let a = [];
+	fill(200, 50, 200);
+	stroke(200, 50, 200);
+
 	for (let i = 0; i < horizontalCells + 1; i++) {
 		a.push([]);
 		for (let j = 0; j < verticalCells + 1; j++) {
-			fill(200, 50, 200);
-			ellipse(i * gridResolution, j * gridResolution, 5, 5);
+
+			// DEBUG: Draw cell markers
+			// line(0, j * gridResolution, windowWidth, j * gridResolution);
+			// line(i * gridResolution, 0, i * gridResolution, windowHeight);
+			// ellipse(i * gridResolution, j * gridResolution, 5, 5);
+
 			a[i].push([]);
 		}
 	}
+	noStroke();
 	return a
 }
 
@@ -19,7 +27,9 @@ function int(n) {
 
 function display() {
 	textSize(12);
-	fill(0, 255, 179);
+	fill(0, 255, 255);
+	textAlign(LEFT);
+
 	text('FPS: ' + Math.round(frameRate()), 6, height - 85);
 	text("Number of Boids: " + boids.length, 6, height - 25);
 	text("Number of Predators: " + predators.length, 6, height - 10);
@@ -75,11 +85,12 @@ function populate_grid() {
 	for (let b in boids) {
 		let x = int(boids[b].position.x / gridResolution);
 		let y = int(boids[b].position.y / gridResolution);
-		console.log('xpos: ' + boids[b].position.x);
-		console.log('x: ' + y + ' y: ' + y);
 		// x = Math.min(x, horizontalCells);
 		// y = Math.min(y, verticalCells);
-		// console.log('xmin: ' + y + ' ymin: ' + y);
+
+		// DEBUG: Log position and cell indices
+		console.log('xpos: ' + boids[b].position.x);
+		console.log('x: ' + y + ' y: ' + y);
 
 		gridBoids[x][y].push(b);
 		boids[b].row = y;
@@ -89,8 +100,8 @@ function populate_grid() {
 	for (let p in predators) {
 		let x = int(predators[p].position.x / gridResolution);
 		let y = int(predators[p].position.y / gridResolution);
-		x = Math.min(x, horizontalCells);
-		y = Math.min(x, verticalCells);
+		// x = Math.min(x, horizontalCells);
+		// y = Math.min(x, verticalCells);
 
 		gridPredators[x][y].push(p);
 		predators[p].row = x;

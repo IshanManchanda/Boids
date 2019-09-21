@@ -22,10 +22,10 @@ class Boid extends Creature {
 		vertex(boidSize, boidSize * 2);
 		endShape(CLOSE);
 
-		// Draw Vicinity and Sight Regions
-		fill(255, 0, 0, 30);
-		ellipse(0, 0, boidSight, boidSight);
-		ellipse(0, 0, boidVicinity, boidVicinity);
+		// DEBUG: Draw Vicinity and Sight Regions
+		// fill(255, 0, 0, 30);
+		// ellipse(0, 0, boidSight, boidSight);
+		// ellipse(0, 0, boidVicinity, boidVicinity);
 
 		rotate(-this.theta);
 		translate(-this.position.x, -this.position.y);
@@ -49,6 +49,7 @@ class Boid extends Creature {
 			return;
 		}
 
+		// DEBUG: Non-optimized, non-spatial-divided force calculation
 		/*for (let b in boids) {
 			let distance = this.position.dist(boids[b].position);
 			if (distance === 0 || distance > boidSight) continue;
@@ -71,6 +72,7 @@ class Boid extends Creature {
 		for (let x = x1; x <= x2; x++) {
 			for (let y = y1; y <= y2; y++) {
 
+				// DEBUG: Draw surrounding squares
 				// fill(150, 150, 150);
 				// square(x * gridResolution, y * gridResolution, gridResolution);
 

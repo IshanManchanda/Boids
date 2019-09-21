@@ -1,4 +1,5 @@
 let screen = -1;
+let paused = true;
 let width, height, area, ratio;
 let gridResolution, horizontalCells, verticalCells;
 
@@ -48,18 +49,19 @@ function setGlobals() {
 	horizontalCells = Math.ceil(width / gridResolution);
 	verticalCells = Math.ceil(height / gridResolution);
 
-	console.log('width ' + width); // 1536
-	console.log('height ' + height); // 722
-	console.log('area ' + area); // 1108992
-	console.log('bsize ' + boidSize); // 7.0205
-	console.log('bvic ' + boidVicinity); // 42.1234
-	console.log('bsight ' + boidSight); // 154.4527
-	console.log('psize ' + predatorSize); // 9.8288
-	console.log('pvic ' + predatorVicinity); // 58.9728
-	console.log('psight ' + predatorSight); // 216.2338
-	console.log('bspeed ' + boidSpeed); // 11.0899
-	console.log('pspeed ' + predatorSpeed); // 12.1989
-	console.log('res ' + gridResolution); // 108.1169
-	console.log('hcells ' + horizontalCells); // 15
-	console.log('vcells ' + verticalCells); // 7
+	// DEBUG: Log globals
+	// console.log('width ' + width); // 1536
+	// console.log('height ' + height); // 722
+	// console.log('area ' + area); // 1108992
+	// console.log('bsize ' + boidSize); // 7.0205
+	// console.log('bvic ' + boidVicinity); // 42.1234
+	// console.log('bsight ' + boidSight); // 154.4527
+	// console.log('psize ' + predatorSize); // 9.8288
+	// console.log('pvic ' + predatorVicinity); // 58.9728
+	// console.log('psight ' + predatorSight); // 216.2338
+	// console.log('bspeed ' + boidSpeed); // 11.0899
+	// console.log('pspeed ' + predatorSpeed); // 12.1989
+	// console.log('res ' + gridResolution); // 108.1169
+	// console.log('hcells ' + horizontalCells); // 15
+	// console.log('vcells ' + verticalCells); // 7
 }

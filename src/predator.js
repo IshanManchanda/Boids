@@ -20,10 +20,10 @@ class Predator extends Creature {
 		vertex(predatorSize, predatorSize * 2);
 		endShape(CLOSE);
 
-		// Draw Sight Region
-		fill(255, 0, 0, 30);
-		ellipse(0, 0, predatorSight, predatorSight);
-		ellipse(0, 0, predatorVicinity, predatorVicinity);
+		// DEBUG: Draw Vicinity and Sight Regions
+		// fill(255, 0, 0, 30);
+		// ellipse(0, 0, predatorSight, predatorSight);
+		// ellipse(0, 0, predatorVicinity, predatorVicinity);
 
 		rotate(-this.theta);
 		translate(-this.position.x, -this.position.y);
@@ -47,10 +47,34 @@ class Predator extends Creature {
 	};
 
 	apply_forces() {
-		for (let p in predators) {
+		// DEBUG: Non-optimized, non-spatial-divided force calculation
+		/*for (let p in predators) {
 			let distance = this.position.dist(predators[p].position);
 			if (distance === 0 || distance > predatorSight) continue;
 			this.separation(distance, predators[p].position);
+		}*/
+
+		let x1 = Math.max(0, this.col - 1);
+		let x2 = Math.min(horizontalCells, this.col + 1);
+		let y1 = Math.max(0, this.row - 1);
+		let y2 = Math.min(verticalCells, this.row + 1);
+
+		for (let x = x1; x <= x2; x++) {
+			for (let y = y1; y <= y2; y++) {
+
+				// DEBUG: Draw surrounding squares
+				// fill(150, 150, 150);
+				// square(x * gridResolution, y * gridResolution, gridResolution);
+
+				for (let z = 0; z < gridPredators[x][y].length; z++) {
+					let p = gridPredators[x][y][z];
+					if (!predators[p]) continue;
+
+					let distance = this.position.dist(predators[p].position);
+					if (distance === 0 || distance > boidSight) continue;
+					this.separation(distance, predators[p].position);
+				}
+			}
 		}
 
 		this.apply_force(this.force_separation, predatorSeparationWeight);

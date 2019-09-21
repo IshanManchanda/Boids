@@ -1,5 +1,5 @@
 p5.disableFriendlyErrors = true;
-
+let pauseButton;
 
 function checkWindowSize() {
 	// Allow up to 16.5% less than 1024 x 768
@@ -25,13 +25,7 @@ function checkWindowSize() {
 	}
 }
 
-function setup() {
-	createCanvas(windowWidth, windowHeight);
-	noStroke();
-	frameRate(30);
-	checkWindowSize();
-	setGlobals();
-
+function initGrid() {
 	for (let i = 0; i < boidInitial; i++) {
 		boids.push(new Boid(
 			createVector(
@@ -52,28 +46,66 @@ function setup() {
 	}
 }
 
+function initButtons() {
+	pauseButton = new P5Clickable();
+	pauseButton.locate(windowWidth * 0.9, windowHeight * 0.01);
+	pauseButton.resize(windowHeight * 0.14, windowHeight * 0.06);
+	pauseButton.text = "Start Simulation";
+	pauseButton.onPress = function() {
+		paused = !paused;
+		this.text = paused ? "Play" : "Pause";
+	};
+}
+
+function setup() {
+	createCanvas(windowWidth, windowHeight);
+	noStroke();
+	frameRate(30);
+
+	checkWindowSize();
+	setGlobals();
+
+	initButtons();
+	initGrid();
+}
+
+
 function windowResized() {
 	resizeCanvas(windowWidth, windowHeight);
 	checkWindowSize();
 	setGlobals();
 }
 
+function simulate() {
+	if (paused) {
+		for (let b in boids) {
+			boids[b].draw();
+		}
+		for (let p in predators) {
+			predators[p].draw();
+		}
+	} else {
+		for (let b in boids) {
+			boids[b].update();
+			boids[b].draw();
+		}
+
+		for (let p in predators) {
+			predators[p].update();
+			predators[p].draw();
+		}
+	}
+}
+
 
 function draw() {
 	background(0);
+
 	populate_grid();
 	interaction();
 
-	for (let b in boids) {
-		boids[b].update();
-		boids[b].draw();
-	}
-
-	for (let p in predators) {
-		predators[p].update();
-		predators[p].draw();
-	}
-
+	simulate();
+	pauseButton.draw();
 	display();
 }
 
