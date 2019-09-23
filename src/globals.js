@@ -1,4 +1,3 @@
-let screen = -1;
 let paused = true;
 let width, height, area, ratio;
 let gridResolution, horizontalCells, verticalCells;
@@ -28,6 +27,13 @@ let cohesion = true;
 let alignment = true;
 let separation = true;
 
+const STATE_SMALL_SCREEN = -1;
+const STATE_INCORRECT_ORIENTATION = -2;
+const STATE_UNSUPPORTED_RATIO = -3;
+const STATE_INIT = 1;
+const STATE_SIMULATION = 1; // TODO: Change to 2 in prod
+
+let state = STATE_INIT;
 
 function setGlobals() {
 	width = windowWidth;

@@ -37,7 +37,6 @@ class Boid extends Creature {
 		this.velocity.add(this.acceleration);
 		this.velocity.limit(boidSpeed);
 		this.position.add(this.velocity);
-		resetMatrix();
 
 		this.check_bounds();
 		this.acceleration.mult(0);

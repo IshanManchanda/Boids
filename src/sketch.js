@@ -5,15 +5,16 @@ function checkWindowSize() {
 	// Allow up to 16.5% less than 1024 x 768
 	if (Math.max(windowWidth, windowHeight) < 855 ||
 		Math.min(windowWidth, windowHeight) < 642) {
-		screen = -1;  // Screen too small
+		state = STATE_SMALL_SCREEN;  // Screen too small
 	}
 
 	// Screen ratio
 	const r = windowWidth / windowHeight;
 	if (r < 1) {
-		screen = -2;  // Incorrect orientation
+		state = STATE_INCORRECT_ORIENTATION;  // Incorrect orientation
 	}
 
+	// TODO: Fix screen ratio checks with browser-related height reduction
 	if (Math.abs(r - (16 / 9)) < 0.01) {
 		ratio = 16;
 	} else if (Math.abs(r - (8 / 5)) < 0.01) {
@@ -21,7 +22,7 @@ function checkWindowSize() {
 	} else if (Math.abs(r - (4 / 3)) < 0.01) {
 		ratio = 4;
 	} else {
-		screen = -3;  // Unsupported aspect ratio
+		state = STATE_UNSUPPORTED_RATIO;  // Unsupported aspect ratio
 	}
 }
 
@@ -51,6 +52,7 @@ function initButtons() {
 	pauseButton.locate(windowWidth * 0.9, windowHeight * 0.01);
 	pauseButton.resize(windowHeight * 0.14, windowHeight * 0.06);
 	pauseButton.text = "Start Simulation";
+
 	pauseButton.onPress = function() {
 		paused = !paused;
 		this.text = paused ? "Play" : "Pause";
@@ -97,16 +99,48 @@ function simulate() {
 	}
 }
 
+function handleState() {
+	switch (state) {
+		case STATE_SMALL_SCREEN:
+			sizeErrorScreen();
+			break;
+		case STATE_INCORRECT_ORIENTATION:
+			orientationErrorScreen();
+			break;
+		case STATE_UNSUPPORTED_RATIO:
+			ratioErrorScreen();
+			break;
+		case STATE_SIMULATION:
+			simulationScreen();
+			break;
+	}
+}
 
-function draw() {
-	background(0);
 
+function simulationScreen() {
 	populate_grid();
 	interaction();
 
 	simulate();
 	pauseButton.draw();
 	display();
+}
+
+function sizeErrorScreen() {
+	// TODO: Show "Screen too small" message
+}
+
+function orientationErrorScreen() {
+	// TODO: Show "Incorrect screen orientation" message
+}
+
+function ratioErrorScreen() {
+	// TODO: Show "Unsupported screen ratio" message
+}
+
+function draw() {
+	background(0);
+	handleState();
 }
 
 

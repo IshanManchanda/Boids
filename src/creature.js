@@ -11,10 +11,10 @@ class Creature {
 
 	check_bounds() {
 		if (this.position.x < 0) this.position.x += width;
-		else if (this.position.x > width) this.position.x -= width;
+		else if (this.position.x >= width) this.position.x -= width;
 
 		if (this.position.y < 0) this.position.y += height;
-		else if (this.position.y > height) this.position.y -= height;
+		else if (this.position.y >= height) this.position.y -= height;
 	}
 
 	apply_force(force, weight) {
