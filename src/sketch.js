@@ -146,15 +146,15 @@ function draw() {
 
 function keyPressed() {
 	switch (keyCode) {
-		case 65:
+		case KEY_A:
 			alignment = !alignment;
 			break;
 
-		case 67:
+		case KEY_C:
 			cohesion = !cohesion;
 			break;
 
-		case 83:
+		case KEY_S:
 			separation = !separation;
 			break;
 	}
@@ -163,13 +163,13 @@ function keyPressed() {
 
 function mouseClicked() {
 	if (!keyIsPressed) return;
-	if (keyIsDown(66)) {
+	if (keyIsDown(KEY_B)) {
 		boids.push(new Boid(
 			createVector(mouseX, mouseY),
 			createVector(Math.random() - 0.5, Math.random() - 0.5)
 		));
 	}
-	if (keyIsDown(80)) {
+	if (keyIsDown(KEY_P)) {
 		predators.push(new Predator(
 			createVector(mouseX, mouseY),
 			createVector(Math.random() - 0.5, Math.random() - 0.5)

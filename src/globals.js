@@ -33,6 +33,12 @@ const STATE_UNSUPPORTED_RATIO = -3;
 const STATE_INIT = 1;
 const STATE_SIMULATION = 1; // TODO: Change to 2 in prod
 
+const KEY_A = 65;
+const KEY_B = 66;
+const KEY_C = 67;
+const KEY_P = 80;
+const KEY_S = 83;
+
 let state = STATE_INIT;
 
 function setGlobals() {
