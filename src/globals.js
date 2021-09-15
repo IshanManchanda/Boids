@@ -2,8 +2,8 @@ let paused = true;
 let width, height, area, ratio;
 let gridResolution, horizontalCells, verticalCells;
 
-const boidInitial = 20;
-const predatorInitial = 0;
+const boidInitial = 100;
+const predatorInitial = 3;
 
 let boidSize, boidVicinity, boidSight;
 let predatorSize, predatorVicinity, predatorSight;
