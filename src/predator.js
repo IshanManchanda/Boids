@@ -9,6 +9,7 @@ class Predator extends Creature {
 	}
 
 	draw() {
+		if (!this.alive) return;
 		this.theta = this.velocity.heading() + Math.PI / 2;
 		fill(255, 0, 255);
 		translate(this.position.x, this.position.y);
@@ -30,7 +31,7 @@ class Predator extends Creature {
 	};
 
 	update() {
-		this.hunger++;
+		++this.hunger;
 		if (this.hunger >= predatorHungerLimit) {
 			this.alive = false;
 			return;
@@ -59,14 +60,14 @@ class Predator extends Creature {
 		let y1 = Math.max(0, this.row - 1);
 		let y2 = Math.min(verticalCells, this.row + 1);
 
-		for (let x = x1; x <= x2; x++) {
-			for (let y = y1; y <= y2; y++) {
+		for (let x = x1; x <= x2; ++x) {
+			for (let y = y1; y <= y2; ++y) {
 
 				// DEBUG: Draw surrounding squares
 				// fill(150, 150, 150);
 				// square(x * gridResolution, y * gridResolution, gridResolution);
 
-				for (let z = 0; z < gridPredators[x][y].length; z++) {
+				for (let z = 0; z < gridPredators[x][y].length; ++z) {
 					let p = gridPredators[x][y][z];
 					if (!predators[p]) continue;
 
