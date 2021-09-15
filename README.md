@@ -14,7 +14,7 @@ These are the rules that govern Boid-Boid interactions; the original simulation 
 
 
 ### My Implementation
-I have implemented the above listed rules as well as some others to try and create an ecosystem. The ecosystem contains both Boids and Predators, with the Predators seeking Boids while the Boids flee from them. An earlier version of this ecosystem, which I developed on Khan Academy, had even more interactions in the form of static obstacles as well as a water body.
+I have implemented the above listed rules as well as some others to try and create an ecosystem. The ecosystem contains both Boids and Predators, with the Predators seeking Boids while the Boids flee from them. The Predators have a look-ahead feature which allows them to take into account the current velocity of Boids in additiona to their position. An earlier version of this ecosystem, which I developed on Khan Academy, had even more interactions in the form of static obstacles as well as a water body.
 
 Each Predator has a hunger value which is reset when it eats a Boid. This is done by getting within a certain distance of a Boid, at which point the Boid is eaten. If a Predator's hunger value reaches a certain limit, it dies of starvation.
 
