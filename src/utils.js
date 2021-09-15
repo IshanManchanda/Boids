@@ -1,8 +1,11 @@
-function empty_grid() {
+function emptyGrid() {
 	let a = [];
-	fill(200, 50, 200);
-	stroke(200, 50, 200);
 
+	// DEBUG: Settings for drawing cell markers
+	// fill(200, 50, 200);
+	// stroke(200, 50, 200);
+
+	// Create empty array of arrays
 	for (let i = 0; i < horizontalCells + 1; i++) {
 		a.push([]);
 		for (let j = 0; j < verticalCells + 1; j++) {
@@ -15,17 +18,20 @@ function empty_grid() {
 			a[i].push([]);
 		}
 	}
-	noStroke();
+	// DEBUG: Reset settings for drawing cell markers
+	// noStroke();
+
 	return a
 }
 
 function int(n) {
-	// ORing a number with 0 returns it's integral value.
+	// ORing a number with 0 returns its integral value.
 	// We use this because it is much faster than Math / parseInt functions.
 	return n | 0;
 }
 
-function display() {
+function displayData() {
+	// Display simulation data on the screen
 	textSize(12);
 	fill(0, 255, 255);
 	textAlign(LEFT);
@@ -35,26 +41,32 @@ function display() {
 	text("Number of Predators: " + predators.length, 6, height - 10);
 
 	cohesion ? fill(0, 255, 0) : fill(255, 0, 0);
-	text((cohesion) ? "Cohesion: ON" : "Cohesion: OFF", 6, height - 70);
+	text("Cohesion: " + (cohesion ? "ON" : "OFF"), 6, height - 70);
 
 	alignment ? fill(0, 255, 0) : fill(255, 0, 0);
-	text((alignment) ? "Alignment: ON" : "Alignment: OFF", 6, height - 55);
+	text("Alignment: " + (alignment ? "ON" : "OFF"), 6, height - 55);
 
 	separation ? fill(0, 255, 0) : fill(255, 0, 0);
-	text((separation) ? "Separation: ON" : "Separation: OFF", 6, height - 40);
+	text("Separation: " + (separation ? "ON" : "OFF"), 6, height - 40);
 }
 
 function interaction() {
+	// Function that handles Boid-Predator interactions
+	// This is more efficient than an OOP-approach as each pair
+	// is evaluated only once
 	for (let b = boids.length - 1; b >= 0; --b) {
 		if (!boids[b]) continue;
 
+		// Compute the cells that need to be checked for this Boid
 		let x1 = Math.max(0, boids[b].row - 2);
 		let x2 = Math.min(horizontalCells, boids[b].row + 2);
 		let y1 = Math.max(0, boids[b].col - 2);
 		let y2 = Math.min(verticalCells, boids[b].col + 2);
 
+		// Iterate over selected cells
 		for (let x = x1; x <= x2; x++) {
 			for (let y = y1; y <= y2; y++) {
+				// Iterate over the predators in this cell
 				for (let z = gridPredators[x][y].length; z >= 0; z--) {
 					let p = gridPredators[x][y][z];
 					if (!predators[p]) continue;
@@ -63,13 +75,18 @@ function interaction() {
 						continue;
 					}
 
+					if (!boids[b] || !predators[p]) continue;
 					let distance = boids[b].position.dist(predators[p].position);
+
+					// If Boid visible to Predator, pursue
 					if (distance > predatorSight) continue;
 					predators[p].pursue(distance, boids[b].position);
 
+					// If Predator visible to Boid, flee
 					if (distance > boidSight) continue;
 					boids[b].flee(distance, predators[p].position);
 
+					// If distance sufficiently small, eat Boid
 					if (distance > (predatorSize + boidSize) * 2.4) continue;
 					predators[p].eat(b);
 				}
@@ -78,19 +95,20 @@ function interaction() {
 	}
 }
 
-function populate_grid() {
-	gridBoids = empty_grid();
-	gridPredators = empty_grid();
+function populateGrid() {
+	gridBoids = emptyGrid();
+	gridPredators = emptyGrid();
 
 	for (let b in boids) {
+		if (!boids[b]) continue;
 		let x = int(boids[b].position.x / gridResolution);
 		let y = int(boids[b].position.y / gridResolution);
 		// x = Math.min(x, horizontalCells);
 		// y = Math.min(y, verticalCells);
 
 		// DEBUG: Log position and cell indices
-		console.log('xpos: ' + boids[b].position.x);
-		console.log('x: ' + y + ' y: ' + y);
+		// console.log('xpos: ' + boids[b].position.x);
+		// console.log('x: ' + y + ' y: ' + y);
 
 		gridBoids[x][y].push(b);
 		boids[b].row = y;
@@ -98,6 +116,7 @@ function populate_grid() {
 	}
 
 	for (let p in predators) {
+		if (!predators[p]) continue;
 		let x = int(predators[p].position.x / gridResolution);
 		let y = int(predators[p].position.y / gridResolution);
 		// x = Math.min(x, horizontalCells);

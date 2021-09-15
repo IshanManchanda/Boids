@@ -3,8 +3,8 @@ class Predator extends Creature {
 		super(position, velocity);
 
 		this.velocity.mult(predatorSpeed);
-		this.force_separation = createVector(0, 0);
-		this.force_pursue = createVector(0, 0);
+		this.forceSeparation = createVector(0, 0);
+		this.forcePursue = createVector(0, 0);
 		this.hunger = 0;
 	}
 
@@ -35,18 +35,18 @@ class Predator extends Creature {
 			this.alive = false;
 			return;
 		}
-		this.apply_forces();
+		this.applyForces();
 
 		this.velocity.add(this.acceleration);
 		this.velocity.limit(predatorSpeed);
 		this.position.add(this.velocity);
 		resetMatrix();
 
-		this.check_bounds();
+		this.checkBounds();
 		this.acceleration.mult(0);
 	};
 
-	apply_forces() {
+	applyForces() {
 		// DEBUG: Non-optimized, non-spatial-divided force calculation
 		/*for (let p in predators) {
 			let distance = this.position.dist(predators[p].position);
@@ -77,8 +77,8 @@ class Predator extends Creature {
 			}
 		}
 
-		this.apply_force(this.force_separation, predatorSeparationWeight);
-		this.apply_force(this.force_pursue, predatorPursueWeight);
+		this.applyForce(this.forceSeparation, predatorSeparationWeight);
+		this.applyForce(this.forcePursue, predatorPursueWeight);
 	}
 
 	separation(distance, position) {
@@ -87,7 +87,7 @@ class Predator extends Creature {
 		target.add(this.position);
 		target.normalize();
 		target.div(distance * distance);
-		this.force_separation.add(target);
+		this.forceSeparation.add(target);
 	};
 
 	pursue(distance, position, velocity) {
@@ -96,7 +96,7 @@ class Predator extends Creature {
 		target.add(velocity);
 		target.normalize();
 		target.div(distance);
-		this.force_pursue.add(target);
+		this.forcePursue.add(target);
 	};
 
 	eat(b) {

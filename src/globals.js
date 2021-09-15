@@ -2,7 +2,7 @@ let paused = true;
 let width, height, area, ratio;
 let gridResolution, horizontalCells, verticalCells;
 
-const boidInitial = 0;
+const boidInitial = 20;
 const predatorInitial = 0;
 
 let boidSize, boidVicinity, boidSight;
@@ -31,7 +31,7 @@ const STATE_SMALL_SCREEN = -1;
 const STATE_INCORRECT_ORIENTATION = -2;
 const STATE_UNSUPPORTED_RATIO = -3;
 const STATE_INIT = 1;
-const STATE_SIMULATION = 1; // TODO: Change to 2 in prod
+const STATE_SIMULATION = 2; // TODO: Change to 2 in prod
 
 const KEY_A = 65;
 const KEY_B = 66;
@@ -40,6 +40,7 @@ const KEY_P = 80;
 const KEY_S = 83;
 
 let state = STATE_INIT;
+// let state = STATE_SIMULATION;
 
 function setGlobals() {
 	width = windowWidth;

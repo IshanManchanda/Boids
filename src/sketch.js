@@ -27,6 +27,7 @@ function checkWindowSize() {
 }
 
 function initGrid() {
+	// Initialize boids and predators with random positions and velocities
 	for (let i = 0; i < boidInitial; i++) {
 		boids.push(new Boid(
 			createVector(
@@ -42,31 +43,46 @@ function initGrid() {
 				Math.floor(Math.random() * width),
 				Math.floor(Math.random() * height)
 			),
-			createVector(Math.random(), Math.random())
+			createVector(Math.random() - 0.5, Math.random() - 0.5)
 		))
 	}
 }
 
-function initButtons() {
-	pauseButton = new P5Clickable();
-	pauseButton.locate(windowWidth * 0.9, windowHeight * 0.01);
+function setButtonState() {
+	// Resize, reposition, and change text of button as needed
 	pauseButton.resize(windowHeight * 0.14, windowHeight * 0.06);
-	pauseButton.text = "Start Simulation";
+	if (state === STATE_SIMULATION) {
+		pauseButton.locate(windowWidth * 0.9, windowHeight * 0.02);
+		pauseButton.text = paused ? "Resume" : "Pause";
+	}
+	else if (state === STATE_INIT) {
+		pauseButton.locate(windowWidth * 0.45, windowHeight * 0.4);
+		pauseButton.text = "Start Simulation";
+	}
+}
+
+function initButtons() {
+	// Initialize button and set state
+	pauseButton = new Clickable();
+	setButtonState();
 
 	pauseButton.onPress = function() {
+		// For initial press
+		state = STATE_SIMULATION;
+
+		// Toggle paused and update state
 		paused = !paused;
-		this.text = paused ? "Play" : "Pause";
+		setButtonState();
 	};
 }
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	noStroke();
-	frameRate(30);
+	frameRate(60);
+	// checkWindowSize();
 
-	checkWindowSize();
 	setGlobals();
-
 	initButtons();
 	initGrid();
 }
@@ -74,11 +90,16 @@ function setup() {
 
 function windowResized() {
 	resizeCanvas(windowWidth, windowHeight);
-	checkWindowSize();
+	// checkWindowSize();
+
 	setGlobals();
+	setButtonState();
+	// TODO: Update boid and predator positions
+	// REVIEW: Does the spatial grid need to be updated?
 }
 
 function simulate() {
+	// Micro optimization: Check flag only once instead of for each creature
 	if (paused) {
 		for (let b in boids) {
 			boids[b].draw();
@@ -100,7 +121,11 @@ function simulate() {
 }
 
 function handleState() {
+	// Run screen corresponding to current state
 	switch (state) {
+		case STATE_INIT:
+			initScreen();
+			break;
 		case STATE_SMALL_SCREEN:
 			sizeErrorScreen();
 			break;
@@ -116,14 +141,19 @@ function handleState() {
 	}
 }
 
+function initScreen() {
+	pauseButton.draw();
+	// TODO: Add some method to set initial simulation variables; sliders?
+}
+
 
 function simulationScreen() {
-	populate_grid();
+	populateGrid();
 	interaction();
 
 	simulate();
 	pauseButton.draw();
-	display();
+	displayData();
 }
 
 function sizeErrorScreen() {
@@ -142,7 +172,6 @@ function draw() {
 	background(0);
 	handleState();
 }
-
 
 function keyPressed() {
 	switch (keyCode) {
