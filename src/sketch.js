@@ -28,7 +28,7 @@ function checkWindowSize() {
 
 function initGrid() {
 	// Initialize boids and predators with random positions and velocities
-	for (let i = 0; i < boidInitial; i++) {
+	for (let i = 0; i < boidInitial; ++i) {
 		boids.push(new Boid(
 			createVector(
 				Math.floor(Math.random() * width),
@@ -37,7 +37,7 @@ function initGrid() {
 			createVector(Math.random() - 0.5, Math.random() - 0.5)
 		))
 	}
-	for (let i = 0; i < predatorInitial; i++) {
+	for (let i = 0; i < predatorInitial; ++i) {
 		predators.push(new Predator(
 			createVector(
 				Math.floor(Math.random() * width),
@@ -50,12 +50,15 @@ function initGrid() {
 
 function setButtonState() {
 	// Resize, reposition, and change text of button as needed
-	pauseButton.resize(windowHeight * 0.14, windowHeight * 0.06);
 	if (state === STATE_SIMULATION) {
+		pauseButton.resize(windowWidth * 0.06, windowHeight * 0.04);
+		pauseButton.textSize = 16;
 		pauseButton.locate(windowWidth * 0.9, windowHeight * 0.02);
 		pauseButton.text = paused ? "Resume" : "Pause";
 	}
 	else if (state === STATE_INIT) {
+		pauseButton.resize(windowWidth * 0.1, windowHeight * 0.08);
+		pauseButton.textSize = 16;
 		pauseButton.locate(windowWidth * 0.45, windowHeight * 0.4);
 		pauseButton.text = "Start Simulation";
 	}
@@ -153,7 +156,6 @@ function simulationScreen() {
 
 	simulate();
 	pauseButton.draw();
-	displayData();
 }
 
 function sizeErrorScreen() {
@@ -171,6 +173,7 @@ function ratioErrorScreen() {
 function draw() {
 	background(0);
 	handleState();
+	displayData();
 }
 
 function keyPressed() {
@@ -192,6 +195,7 @@ function keyPressed() {
 
 function mouseClicked() {
 	if (!keyIsPressed) return;
+	if (state === STATE_INIT) return;
 	if (keyIsDown(KEY_B)) {
 		boids.push(new Boid(
 			createVector(mouseX, mouseY),

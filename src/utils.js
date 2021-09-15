@@ -6,9 +6,9 @@ function emptyGrid() {
 	// stroke(200, 50, 200);
 
 	// Create empty array of arrays
-	for (let i = 0; i < horizontalCells + 1; i++) {
+	for (let i = 0; i < horizontalCells + 1; ++i) {
 		a.push([]);
-		for (let j = 0; j < verticalCells + 1; j++) {
+		for (let j = 0; j < verticalCells + 1; ++j) {
 
 			// DEBUG: Draw cell markers
 			// line(0, j * gridResolution, windowWidth, j * gridResolution);
@@ -48,6 +48,14 @@ function displayData() {
 
 	separation ? fill(0, 255, 0) : fill(255, 0, 0);
 	text("Separation: " + (separation ? "ON" : "OFF"), 6, height - 40);
+
+	if (paused) {
+		textSize(20);
+		fill(255, 255, 255);
+		stroke(0);
+		text("Toggle Cohesion, Alignment, Separation using C, A, S keys.", 6, height - 140);
+		text("Drop Boids/Predator by holding down B/P and clicking.", 6, height - 110);
+	}
 }
 
 function interaction() {
@@ -58,16 +66,16 @@ function interaction() {
 		if (!boids[b]) continue;
 
 		// Compute the cells that need to be checked for this Boid
-		let x1 = Math.max(0, boids[b].row - 2);
-		let x2 = Math.min(horizontalCells, boids[b].row + 2);
-		let y1 = Math.max(0, boids[b].col - 2);
-		let y2 = Math.min(verticalCells, boids[b].col + 2);
+		let x1 = Math.max(0, boids[b].col - 2);
+		let x2 = Math.min(horizontalCells, boids[b].col + 2);
+		let y1 = Math.max(0, boids[b].row - 2);
+		let y2 = Math.min(verticalCells, boids[b].row + 2);
 
 		// Iterate over selected cells
-		for (let x = x1; x <= x2; x++) {
-			for (let y = y1; y <= y2; y++) {
+		for (let x = x1; x <= x2; ++x) {
+			for (let y = y1; y <= y2; ++y) {
 				// Iterate over the predators in this cell
-				for (let z = gridPredators[x][y].length; z >= 0; z--) {
+				for (let z = gridPredators[x][y].length; z >= 0; --z) {
 					let p = gridPredators[x][y][z];
 					if (!predators[p]) continue;
 					if (!predators[p].alive) {
@@ -87,7 +95,7 @@ function interaction() {
 					boids[b].flee(distance, predators[p].position);
 
 					// If distance sufficiently small, eat Boid
-					if (distance > (predatorSize + boidSize) * 2.4) continue;
+					if (distance > eatDistance) continue;
 					predators[p].eat(b);
 				}
 			}
@@ -107,8 +115,8 @@ function populateGrid() {
 		// y = Math.min(y, verticalCells);
 
 		// DEBUG: Log position and cell indices
-		// console.log('xpos: ' + boids[b].position.x);
-		// console.log('x: ' + y + ' y: ' + y);
+		console.log('position: ' + boids[b].position);
+		console.log('x: ' + x + ' y: ' + y);
 
 		gridBoids[x][y].push(b);
 		boids[b].row = y;
@@ -123,7 +131,7 @@ function populateGrid() {
 		// y = Math.min(x, verticalCells);
 
 		gridPredators[x][y].push(p);
-		predators[p].row = x;
-		predators[p].col = y;
+		predators[p].row = y;
+		predators[p].col = x;
 	}
 }

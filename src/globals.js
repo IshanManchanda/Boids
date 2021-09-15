@@ -7,7 +7,7 @@ const predatorInitial = 0;
 
 let boidSize, boidVicinity, boidSight;
 let predatorSize, predatorVicinity, predatorSight;
-let boidSpeed, predatorSpeed;
+let boidSpeed, predatorSpeed, eatDistance;
 
 const boidAlignmentWeight = 2e1;
 const boidCohesionWeight = 1e0;
@@ -31,7 +31,7 @@ const STATE_SMALL_SCREEN = -1;
 const STATE_INCORRECT_ORIENTATION = -2;
 const STATE_UNSUPPORTED_RATIO = -3;
 const STATE_INIT = 1;
-const STATE_SIMULATION = 2; // TODO: Change to 2 in prod
+const STATE_SIMULATION = 2;
 
 const KEY_A = 65;
 const KEY_B = 66;
@@ -57,6 +57,7 @@ function setGlobals() {
 
 	boidSpeed = area / 1.2e5;
 	predatorSpeed = boidSpeed * 1.1;
+	eatDistance = (predatorSize + boidSize) * 1.8;
 
 	gridResolution = predatorSight / 2;
 	horizontalCells = Math.ceil(width / gridResolution);

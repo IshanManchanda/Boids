@@ -12,6 +12,8 @@ class Boid extends Creature {
 	}
 
 	draw() {
+		if (!this.alive) return;
+
 		// Calculate heading angle and translate + rotate frame
 		this.theta = this.velocity.heading() + Math.PI / 2;
 		translate(this.position.x, this.position.y);
@@ -87,15 +89,15 @@ class Boid extends Creature {
 		let y2 = Math.min(verticalCells, this.row + 1);
 
 		// Iterate over the selected cells
-		for (let x = x1; x <= x2; x++) {
-			for (let y = y1; y <= y2; y++) {
+		for (let x = x1; x <= x2; ++x) {
+			for (let y = y1; y <= y2; ++y) {
 
 				// DEBUG: Draw surrounding squares
 				// fill(150, 150, 150);
 				// square(x * gridResolution, y * gridResolution, gridResolution);
 
 				// Iterate over all Boids present in the cell
-				for (let z = 0; z < gridBoids[x][y].length; z++) {
+				for (let z = 0; z < gridBoids[x][y].length; ++z) {
 					let b = gridBoids[x][y][z];
 					if (!boids[b]) continue;
 
