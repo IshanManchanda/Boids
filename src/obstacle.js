@@ -1,8 +1,8 @@
 class Obstacle {
-	constructor(position, radius, lifespan) {
+	constructor(position, radius, lifespan=10000) {
 		this.position = position;
 		this.radius = radius;
-		this.lifespan = 10000;
+		this.lifespan = lifespan;
 		this.active = true;
 	}
 
@@ -13,5 +13,8 @@ class Obstacle {
 
 	update() {
 		this.lifespan--;
+		if (this.lifespan <= 0) {
+			this.active = false;
+		}
 	}
 }
