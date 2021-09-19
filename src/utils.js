@@ -54,7 +54,7 @@ function displayData() {
 		fill(255, 255, 255);
 		stroke(0);
 		text("Toggle Cohesion, Alignment, Separation using C, A, S keys.", 6, height - 140);
-		text("Drop Boids/Predator by holding down B/P and clicking.", 6, height - 110);
+		text("Drop Boids/Predators by holding down B/P keys and clicking.", 6, height - 110);
 	}
 }
 
