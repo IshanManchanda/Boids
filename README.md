@@ -1,5 +1,6 @@
 # Boids Ecosystem
-A p5.js implementation of Craig Reynold's Boids Simulation.
+A p5.js implementation of Craig Reynold's Boids artificial life simulation.  
+Live preview available here: https://ishanmanchanda.github.io/Boids/ (Laptop/desktop recommended)
 
 
 ### Craig Reynold's Boids
